@@ -5,8 +5,10 @@ import * as Plot from "npm:@observablehq/plot";
 import * as Inputs from "npm:@observablehq/inputs";
 import * as d3 from "npm:d3";
 
-// Load data
-const data = await FileAttachment("portfolio.json").json();
+// Load data directly from GitHub (fetches fresh data on every page load)
+const DATA_URL = "https://raw.githubusercontent.com/kimfinale/kiwoom_stock_trading/refs/heads/master/outputs/portfolio.json";
+const response = await fetch(DATA_URL);
+const data = await response.json();
 const summary = data.summary;
 const history = data.history.map(d => ({date: new Date(d.date), value: d.value}));
 const holdings = data.holdings;

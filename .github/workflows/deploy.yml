@@ -3,6 +3,7 @@ name: Deploy
 on:
   push:
     branches: [main, master]
+  workflow_dispatch: # Allow manual triggers from GitHub UI
 
 permissions:
   contents: read
@@ -26,8 +27,6 @@ jobs:
 
       - name: Build
         run: npm run build
-        env:
-          PORTFOLIO_DATA_URL: ${{ secrets.PORTFOLIO_DATA_URL }}
 
       - name: Deploy to GitHub Pages
         uses: observablehq/deploy-to-pages-action@v1
