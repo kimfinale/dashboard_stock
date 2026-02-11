@@ -43,6 +43,9 @@ jobs:
           # Copy new built files
           cp -r dist/* myblog/docs/dashboard_stock/
 
+          # Add .nojekyll file to disable Jekyll (so _observablehq and _npm folders are served)
+          touch myblog/docs/dashboard_stock/.nojekyll
+
           echo "Files synced successfully"
 
       - name: Commit and push to myblog
