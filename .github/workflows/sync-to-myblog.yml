@@ -43,8 +43,9 @@ jobs:
           # Copy new built files
           cp -r dist/* myblog/docs/dashboard_stock/
 
-          # Add .nojekyll file to disable Jekyll (so _observablehq and _npm folders are served)
-          touch myblog/docs/dashboard_stock/.nojekyll
+          # Add .nojekyll at docs root to disable Jekyll for entire site
+          # This ensures _observablehq and _npm folders are served correctly
+          touch myblog/docs/.nojekyll
 
           echo "Files synced successfully"
 
@@ -53,7 +54,7 @@ jobs:
           cd myblog
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/dashboard_stock
+          git add docs/dashboard_stock docs/.nojekyll
 
           if git diff --staged --quiet; then
             echo "No changes to commit"
