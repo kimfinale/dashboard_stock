@@ -1,0 +1,61 @@
+name: Sync to MyBlog
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch: # Allow manual triggers
+
+jobs:
+  build-and-sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout dashboard_stock repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build dashboard
+        run: npm run build
+
+      - name: Checkout myblog repo
+        uses: actions/checkout@v4
+        with:
+          repository: kimfinale/myblog
+          path: myblog
+          token: ${{ secrets.MYBLOG_TOKEN }}
+
+      - name: Sync built files to myblog
+        run: |
+          # Create dashboard_stock directory if it doesn't exist
+          mkdir -p myblog/docs/dashboard_stock
+
+          # Remove old files
+          rm -rf myblog/docs/dashboard_stock/*
+
+          # Copy new built files
+          cp -r dist/* myblog/docs/dashboard_stock/
+
+          echo "Files synced successfully"
+
+      - name: Commit and push to myblog
+        run: |
+          cd myblog
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/dashboard_stock
+
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update dashboard_stock from kimfinale/dashboard_stock@${{ github.sha }}"
+            git push
+            echo "Changes pushed to myblog repo"
+          fi
