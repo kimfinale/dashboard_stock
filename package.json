@@ -1,0 +1,19 @@
+{
+  "name": "dashboard-stock",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "observable preview",
+    "build": "observable build",
+    "deploy": "observable deploy",
+    "clean": "observable clean"
+  },
+  "dependencies": {
+    "@observablehq/framework": "^1.0.0",
+    "@observablehq/plot": "^0.6.0",
+    "@observablehq/inputs": "^0.10.0",
+    "d3": "^7.0.0",
+    "htl": "^0.3.0"
+  }
+}
