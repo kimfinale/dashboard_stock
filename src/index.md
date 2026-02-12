@@ -13,6 +13,23 @@ const summary = data.summary;
 const history = data.history.map(d => ({date: new Date(d.date), value: d.value}));
 const holdings = data.holdings;
 const accounts = data.accounts;
+const virtualAccounts = data.virtual_accounts || [];
+
+// Aggregate virtual accounts by strategy (e.g., Samsung_1..5 → Samsung)
+const strategyMap = new Map();
+for (const va of virtualAccounts) {
+  const strategy = va.name.replace(/_\d+$/, "");
+  if (!strategyMap.has(strategy)) {
+    strategyMap.set(strategy, {name: strategy, sector: va.sector, total_value: 0, cash: 0, equity: 0, total_pnl: 0, count: 0});
+  }
+  const s = strategyMap.get(strategy);
+  s.total_value += va.total_value;
+  s.cash += va.cash;
+  s.equity += va.equity;
+  s.total_pnl += va.total_pnl;
+  s.count += 1;
+}
+const strategies = Array.from(strategyMap.values()).sort((a, b) => b.total_value - a.total_value);
 
 // Formatters
 const formatCurrency = d3.format(",.0f");
@@ -113,6 +130,10 @@ const timeRange = Generators.input(timeRangeInput);
 // Text search for holdings
 const searchInput = Inputs.search(holdings, {placeholder: "Search stocks..."});
 const filteredHoldings = Generators.input(searchInput);
+
+// Text search for virtual accounts
+const vaSearchInput = Inputs.search(virtualAccounts, {placeholder: "Search virtual accounts..."});
+const filteredVA = Generators.input(vaSearchInput);
 ```
 
 <div class="grid grid-cols-2">
@@ -201,6 +222,72 @@ const filteredHoldings = Generators.input(searchInput);
                     total_value: x => `₩${formatCurrency(x)}`,
                     cash: x => `₩${formatCurrency(x)}`,
                     equity: x => `₩${formatCurrency(x)}`
+                }
+            })
+        }
+    </div>
+</div>
+
+<div class="grid grid-cols-2">
+    <div class="card">
+        <h2>Strategy Allocation</h2>
+        ${
+            Plot.plot({
+                marginBottom: 60,
+                x: {label: null, tickRotate: -30},
+                y: {label: "Value (KRW)", tickFormat: "s", grid: true},
+                color: {legend: true},
+                marks: [
+                    Plot.barY(strategies, {x: "name", y: "total_value", fill: "sector", tip: true}),
+                    Plot.ruleY([0])
+                ]
+            })
+        }
+    </div>
+    <div class="card">
+        <h2>Strategy P&L</h2>
+        ${
+            Plot.plot({
+                marginBottom: 60,
+                x: {label: null, tickRotate: -30},
+                y: {label: "P&L (KRW)", grid: true},
+                marks: [
+                    Plot.barY(strategies, {
+                        x: "name",
+                        y: "total_pnl",
+                        fill: d => d.total_pnl >= 0 ? "#51cf66" : "#ff6b6b",
+                        tip: true
+                    }),
+                    Plot.ruleY([0])
+                ]
+            })
+        }
+    </div>
+</div>
+
+<div class="grid grid-cols-1">
+    <div class="card">
+        <h2>Virtual Accounts</h2>
+        <div style="margin-bottom: 10px;">${vaSearchInput}</div>
+        ${
+            Inputs.table(filteredVA, {
+                columns: ["name", "sector", "allocation_ratio", "total_value", "cash", "equity", "total_pnl"],
+                header: {
+                    name: "Account",
+                    sector: "Sector",
+                    allocation_ratio: "Allocation",
+                    total_value: "Total Value",
+                    cash: "Cash",
+                    equity: "Equity",
+                    total_pnl: "P&L"
+                },
+                sort: "name",
+                format: {
+                    total_value: x => `₩${formatCurrency(x)}`,
+                    cash: x => `₩${formatCurrency(x)}`,
+                    equity: x => `₩${formatCurrency(x)}`,
+                    total_pnl: x => `₩${formatCurrency(x)}`,
+                    allocation_ratio: x => `${(x * 100).toFixed(1)}%`
                 }
             })
         }
