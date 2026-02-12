@@ -1,5 +1,16 @@
 # Stock Investment Dashboard
 
+<style>
+.table-scroll {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 500px;
+}
+.table-scroll table {
+  min-width: 700px;
+}
+</style>
+
 ```js
 import * as Plot from "npm:@observablehq/plot";
 import * as Inputs from "npm:@observablehq/inputs";
@@ -183,7 +194,7 @@ const filteredVA = Generators.input(vaSearchInput);
     <div class="card">
         <h2>Holdings</h2>
         <div style="margin-bottom: 10px;">${searchInput}</div>
-        ${
+        <div class="table-scroll">${
             Inputs.table(filteredHoldings, {
                 columns: ["name", "sector", "quantity", "avg_price", "current_price", "value", "pnl", "pnl_percent", "account"],
                 header: {
@@ -207,14 +218,14 @@ const filteredVA = Generators.input(vaSearchInput);
                     pnl_percent: x => `${formatPercent(x)}%`
                 }
             })
-        }
+        }</div>
     </div>
 </div>
 
 <div class="grid grid-cols-1">
     <div class="card">
         <h2>Account Breakdown</h2>
-         ${
+        <div class="table-scroll">${
             Inputs.table(accounts, {
                 columns: ["name", "total_value", "cash", "equity"],
                 header: {name: "Account", total_value: "Total Value", cash: "Cash", equity: "Equity"},
@@ -224,44 +235,7 @@ const filteredVA = Generators.input(vaSearchInput);
                     equity: x => `₩${formatCurrency(x)}`
                 }
             })
-        }
-    </div>
-</div>
-
-<div class="grid grid-cols-2">
-    <div class="card">
-        <h2>Strategy Allocation</h2>
-        ${
-            Plot.plot({
-                marginBottom: 60,
-                x: {label: null, tickRotate: -30},
-                y: {label: "Value (KRW)", tickFormat: "s", grid: true},
-                color: {legend: true},
-                marks: [
-                    Plot.barY(strategies, {x: "name", y: "total_value", fill: "sector", tip: true}),
-                    Plot.ruleY([0])
-                ]
-            })
-        }
-    </div>
-    <div class="card">
-        <h2>Strategy P&L</h2>
-        ${
-            Plot.plot({
-                marginBottom: 60,
-                x: {label: null, tickRotate: -30},
-                y: {label: "P&L (KRW)", grid: true},
-                marks: [
-                    Plot.barY(strategies, {
-                        x: "name",
-                        y: "total_pnl",
-                        fill: d => d.total_pnl >= 0 ? "#51cf66" : "#ff6b6b",
-                        tip: true
-                    }),
-                    Plot.ruleY([0])
-                ]
-            })
-        }
+        }</div>
     </div>
 </div>
 
@@ -269,7 +243,7 @@ const filteredVA = Generators.input(vaSearchInput);
     <div class="card">
         <h2>Virtual Accounts</h2>
         <div style="margin-bottom: 10px;">${vaSearchInput}</div>
-        ${
+        <div class="table-scroll">${
             Inputs.table(filteredVA, {
                 columns: ["name", "sector", "allocation_ratio", "total_value", "cash", "equity", "total_pnl"],
                 header: {
@@ -290,6 +264,6 @@ const filteredVA = Generators.input(vaSearchInput);
                     allocation_ratio: x => `${(x * 100).toFixed(1)}%`
                 }
             })
-        }
+        }</div>
     </div>
 </div>
