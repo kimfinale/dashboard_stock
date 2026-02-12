@@ -245,10 +245,13 @@ const filteredVA = Generators.input(vaSearchInput);
         <div style="margin-bottom: 10px;">${vaSearchInput}</div>
         <div class="table-scroll">${
             Inputs.table(filteredVA, {
-                columns: ["name", "sector", "allocation_ratio", "total_value", "cash", "equity", "total_pnl"],
+                columns: ["name", "sector", "strategy_type", "rise_pct", "dip_pct", "allocation_ratio", "total_value", "cash", "equity", "total_pnl"],
                 header: {
                     name: "Account",
                     sector: "Sector",
+                    strategy_type: "Strategy",
+                    rise_pct: "Rise %",
+                    dip_pct: "Dip %",
                     allocation_ratio: "Allocation",
                     total_value: "Total Value",
                     cash: "Cash",
@@ -261,7 +264,9 @@ const filteredVA = Generators.input(vaSearchInput);
                     cash: x => `₩${formatCurrency(x)}`,
                     equity: x => `₩${formatCurrency(x)}`,
                     total_pnl: x => `₩${formatCurrency(x)}`,
-                    allocation_ratio: x => `${(x * 100).toFixed(1)}%`
+                    allocation_ratio: x => `${(x * 100).toFixed(1)}%`,
+                    rise_pct: x => `${x}%`,
+                    dip_pct: x => x ? `${x}%` : "—"
                 }
             })
         }</div>
