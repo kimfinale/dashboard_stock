@@ -196,17 +196,26 @@ const filteredVA = Generators.input(vaSearchInput);
         <div style="margin-bottom: 10px;">${searchInput}</div>
         <div class="table-scroll">${
             Inputs.table(filteredHoldings, {
-                columns: ["name", "sector", "quantity", "avg_price", "current_price", "value", "pnl", "pnl_percent", "account"],
+                columns: ["name", "sector", "quantity", "avg_price", "current_price", "value", "pnl", "pnl_percent"],
                 header: {
-                    name: "Name", 
+                    name: "Name",
                     sector: "Sector",
-                    quantity: "Qty", 
-                    avg_price: "Avg Price", 
-                    current_price: "Cur Price", 
-                    value: "Value", 
-                    pnl: "P&L", 
-                    pnl_percent: "Return %",
-                    account: "Account"
+                    quantity: "Qty",
+                    avg_price: "Avg Price",
+                    current_price: "Cur Price",
+                    value: "Value",
+                    pnl: "P&L",
+                    pnl_percent: "Return %"
+                },
+                width: {
+                    name: 100,
+                    sector: 90,
+                    quantity: 50,
+                    avg_price: 100,
+                    current_price: 100,
+                    value: 110,
+                    pnl: 100,
+                    pnl_percent: 80
                 },
                 sort: "value",
                 reverse: true,
@@ -252,11 +261,23 @@ const filteredVA = Generators.input(vaSearchInput);
                     strategy_type: "Strategy",
                     rise_pct: "Rise %",
                     dip_pct: "Dip %",
-                    allocation_ratio: "Allocation",
+                    allocation_ratio: "Alloc",
                     total_value: "Total Value",
                     cash: "Cash",
                     equity: "Equity",
                     total_pnl: "P&L"
+                },
+                width: {
+                    name: 160,
+                    sector: 100,
+                    strategy_type: 80,
+                    rise_pct: 60,
+                    dip_pct: 60,
+                    allocation_ratio: 60,
+                    total_value: 110,
+                    cash: 110,
+                    equity: 100,
+                    total_pnl: 100
                 },
                 sort: "name",
                 format: {
