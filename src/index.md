@@ -31,13 +31,14 @@ const strategyMap = new Map();
 for (const va of virtualAccounts) {
   const strategy = va.name.replace(/_\d+$/, "");
   if (!strategyMap.has(strategy)) {
-    strategyMap.set(strategy, {name: strategy, sector: va.sector, total_value: 0, cash: 0, equity: 0, total_pnl: 0, count: 0});
+    strategyMap.set(strategy, {name: strategy, sector: va.sector, total_value: 0, cash: 0, equity: 0, unrealized_pnl: 0, realized_pnl: 0, count: 0});
   }
   const s = strategyMap.get(strategy);
   s.total_value += va.total_value;
   s.cash += va.cash;
   s.equity += va.equity;
-  s.total_pnl += va.total_pnl;
+  s.unrealized_pnl += (va.unrealized_pnl || 0);
+  s.realized_pnl += (va.realized_pnl || 0);
   s.count += 1;
 }
 const strategies = Array.from(strategyMap.values()).sort((a, b) => b.total_value - a.total_value);
@@ -254,7 +255,7 @@ const filteredVA = Generators.input(vaSearchInput);
         <div style="margin-bottom: 10px;">${vaSearchInput}</div>
         <div class="table-scroll">${
             Inputs.table(filteredVA, {
-                columns: ["name", "sector", "strategy_type", "rise_pct", "dip_pct", "allocation_ratio", "total_value", "cash", "equity", "total_pnl", "buy_count", "sell_count"],
+                columns: ["name", "sector", "strategy_type", "rise_pct", "dip_pct", "allocation_ratio", "total_value", "cash", "equity", "unrealized_pnl", "realized_pnl", "buy_count", "sell_count"],
                 header: {
                     name: "Account",
                     sector: "Sector",
@@ -265,12 +266,13 @@ const filteredVA = Generators.input(vaSearchInput);
                     total_value: "Total Value",
                     cash: "Cash",
                     equity: "Equity",
-                    total_pnl: "P&L",
+                    unrealized_pnl: "평가손익",
+                    realized_pnl: "실현손익",
                     buy_count: "Buys",
                     sell_count: "Sells"
                 },
                 width: {
-                    name: 160,
+                    name: 150,
                     sector: 90,
                     strategy_type: 80,
                     rise_pct: 55,
@@ -279,7 +281,8 @@ const filteredVA = Generators.input(vaSearchInput);
                     total_value: 100,
                     cash: 100,
                     equity: 90,
-                    total_pnl: 90,
+                    unrealized_pnl: 85,
+                    realized_pnl: 85,
                     buy_count: 50,
                     sell_count: 50
                 },
@@ -288,7 +291,8 @@ const filteredVA = Generators.input(vaSearchInput);
                     total_value: x => `₩${formatCurrency(x)}`,
                     cash: x => `₩${formatCurrency(x)}`,
                     equity: x => `₩${formatCurrency(x)}`,
-                    total_pnl: x => `₩${formatCurrency(x)}`,
+                    unrealized_pnl: x => `₩${formatCurrency(x)}`,
+                    realized_pnl: x => `₩${formatCurrency(x)}`,
                     allocation_ratio: x => `${(x * 100).toFixed(1)}%`,
                     rise_pct: x => `${x}%`,
                     dip_pct: x => x ? `${x}%` : "—"
