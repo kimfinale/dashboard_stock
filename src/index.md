@@ -85,7 +85,7 @@ const concentration = d3.sum(topHoldings, d => d.value) / summary.total_value * 
     <h2>Total Portfolio Value</h2>
     <div class="big">₩${formatCurrency(summary.total_value)}</div>
     <div class="muted">
-      ${formatCurrency(summary.daily_pnl)} (${formatPercent(summary.daily_return)}%)
+      Cash: ₩${formatCurrency(summary.cash)} (${summary.cash_percent}%)
     </div>
   </div>
   <div class="card">
@@ -96,17 +96,17 @@ const concentration = d3.sum(topHoldings, d => d.value) / summary.total_value * 
     </div>
   </div>
   <div class="card">
-    <h2>Today's Performance</h2>
-    <div class="big">₩${formatCurrency(summary.daily_pnl)}</div>
+    <h2>평가손익 (Unrealized)</h2>
+    <div class="big">₩${formatCurrency(summary.unrealized_pnl || 0)}</div>
     <div class="muted">
-      ${formatPercent(summary.daily_return)}%
+      Paper gains on current holdings
     </div>
   </div>
   <div class="card">
-    <h2>Cash Position</h2>
-    <div class="big">₩${formatCurrency(summary.cash)}</div>
+    <h2>실현손익 (Realized)</h2>
+    <div class="big">₩${formatCurrency(summary.realized_pnl || 0)}</div>
     <div class="muted">
-      ${summary.cash_percent}% of portfolio
+      Profit from completed trades
     </div>
   </div>
 </div>
