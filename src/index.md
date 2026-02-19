@@ -50,24 +50,27 @@ const formatNumber = d3.format(",.2f");
 
 // Helper to calculate risk metrics
 function calculateRisk(hist) {
+  if (hist.length < 2) return {volatility: 0, maxDrawdown: 0, sharpe: 0};
+
   const returns = [];
   let maxVal = 0;
   let maxDD = 0;
-  
+
   for (let i = 1; i < hist.length; i++) {
     const r = (hist[i].value - hist[i-1].value) / hist[i-1].value;
     returns.push(r);
-    
+
     if (hist[i].value > maxVal) maxVal = hist[i].value;
     const dd = (maxVal - hist[i].value) / maxVal;
     if (dd > maxDD) maxDD = dd;
   }
-  
+
   const meanReturn = d3.mean(returns);
   const stdDev = d3.deviation(returns);
+  if (!stdDev || stdDev === 0) return {volatility: 0, maxDrawdown: maxDD * 100, sharpe: 0};
   const annualizedVol = stdDev * Math.sqrt(252);
   const sharpe = (meanReturn / stdDev) * Math.sqrt(252); // Assuming 0 risk-free
-  
+
   return {
     volatility: annualizedVol * 100,
     maxDrawdown: maxDD * 100,
@@ -115,8 +118,9 @@ const concentration = d3.sum(topHoldings, d => d.value) / summary.total_value * 
   <div class="card">
     <h2>Portfolio Value Over Time</h2>
     <div style="display: flex; justify-content: flex-end;">${timeRangeInput}</div>
-    ${
-      Plot.plot({
+    ${history.length === 0
+      ? html`<p style="text-align: center; color: #888; padding: 40px 0;">No history data yet. Run the portfolio generator to start collecting data.</p>`
+      : Plot.plot({
         y: {grid: true, label: "Value (KRW)", tickFormat: "s"},
         x: {label: "Date"},
         marks: [
@@ -126,7 +130,7 @@ const concentration = d3.sum(topHoldings, d => d.value) / summary.total_value * 
              if (timeRange === "3M") return d.date > d3.timeMonth.offset(now, -3);
              if (timeRange === "6M") return d.date > d3.timeMonth.offset(now, -6);
              if (timeRange === "1Y") return d.date > d3.timeYear.offset(now, -1);
-             return true; 
+             return true;
           }), {x: "date", y: "value", tip: true, stroke: "steelblue"}),
           Plot.ruleY([0])
         ]
