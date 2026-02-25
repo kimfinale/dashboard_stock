@@ -122,7 +122,7 @@ const concentration = d3.sum(topHoldings, d => d.value) / summary.total_value * 
       ? html`<p style="text-align: center; color: #888; padding: 40px 0;">No history data yet. Run the portfolio generator to start collecting data.</p>`
       : Plot.plot({
         y: {grid: true, label: "Value (KRW)", tickFormat: "s", ...(yScale === "From 0" ? {domain: [0, d3.max(history, d => d.value) * 1.05]} : {})},
-        x: {label: "Date", tickFormat: "%Y-%m-%d"},
+        x: {label: "Date", tickFormat: "%Y-%m-%d", ticks: d3.utcDay.every(1)},
         marks: [
           Plot.lineY(history.filter(d => {
              const now = new Date();
