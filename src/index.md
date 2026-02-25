@@ -117,11 +117,11 @@ const concentration = d3.sum(topHoldings, d => d.value) / summary.total_value * 
 <div class="grid grid-cols-1">
   <div class="card">
     <h2>Portfolio Value Over Time</h2>
-    <div style="display: flex; justify-content: flex-end;">${timeRangeInput}</div>
+    <div style="display: flex; justify-content: flex-end; gap: 20px;">${yScaleInput} ${timeRangeInput}</div>
     ${history.length === 0
       ? html`<p style="text-align: center; color: #888; padding: 40px 0;">No history data yet. Run the portfolio generator to start collecting data.</p>`
       : Plot.plot({
-        y: {grid: true, label: "Value (KRW)", tickFormat: "s"},
+        y: {grid: true, label: "Value (KRW)", tickFormat: "s", ...(yScale === "From 0" ? {domain: [0, d3.max(history, d => d.value) * 1.05]} : {})},
         x: {label: "Date"},
         marks: [
           Plot.lineY(history.filter(d => {
@@ -131,8 +131,7 @@ const concentration = d3.sum(topHoldings, d => d.value) / summary.total_value * 
              if (timeRange === "6M") return d.date > d3.timeMonth.offset(now, -6);
              if (timeRange === "1Y") return d.date > d3.timeYear.offset(now, -1);
              return true;
-          }), {x: "date", y: "value", tip: true, stroke: "steelblue"}),
-          Plot.ruleY([0])
+          }), {x: "date", y: "value", tip: true, stroke: "steelblue"})
         ]
       })
     }
@@ -142,6 +141,9 @@ const concentration = d3.sum(topHoldings, d => d.value) / summary.total_value * 
 ```js
 const timeRangeInput = Inputs.radio(["1M", "3M", "6M", "1Y", "All"], {label: "Time Range", value: "All"});
 const timeRange = Generators.input(timeRangeInput);
+
+const yScaleInput = Inputs.radio(["Auto", "From 0"], {label: "Y-Axis", value: "Auto"});
+const yScale = Generators.input(yScaleInput);
 
 // Text search for holdings
 const searchInput = Inputs.search(holdings, {placeholder: "Search stocks..."});
